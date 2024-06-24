@@ -15,42 +15,6 @@ defmodule TodolistWeb.ItemLive.Index do
      |> assign(:total_pages, total_pages)}
   end
 
-  @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, :edit, %{"id" => id}) do
-    socket
-    |> assign(:page_title, "Edit Item")
-    |> assign(:item, List.get_item!(id))
-  end
-
-  defp apply_action(socket, :new, _params) do
-    socket
-    |> assign(:page_title, "New Item")
-    |> assign(:item, %Item{})
-  end
-
-  defp apply_action(socket, :index, _params) do
-    socket
-    |> assign(:page_title, "Listing Items")
-    |> assign(:item, nil)
-  end
-
-  @impl true
-  def handle_info({TodolistWeb.ItemLive.FormComponent, {:saved, item}}, socket) do
-    {:noreply, stream_insert(socket, :items, item)}
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    item = List.get_item!(id)
-    {:ok, _} = List.delete_item(item)
-
-    {:noreply, stream_delete(socket, :items, item)}
-  end
-
   def handle_event("next_page", _value, socket) do
     total_pages = socket.assigns.total_pages
     current_page = socket.assigns.current_page
